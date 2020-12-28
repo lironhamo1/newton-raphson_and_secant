@@ -22,7 +22,7 @@ def newton(f,a,b, eps):
         count+=1
         x0=tmp
         if (count>=50):
-            break
+            return None
     print("Newton-Raphson num of iter", count)
     return x1
 
@@ -40,15 +40,30 @@ def secant(f,a,b, eps):
         x1=tmp
         count+=1
         if (count>=50):
-            break
+            return None
     print("secant num of iter",count)
     return x2
-
+"""
+Cutting the section (a,b) into smaller sections
+And if there is a sign change we will send it to secant and newton"""
+def func_2(f, start_point , end_point, num_of_split):
+    length=(end_point-start_point)/num_of_split
+    x = symbols('x')
+    fx = lambdify(x, f,"math")
+    x=start_point
+    while(x<end_point):
+        if fx(x)* fx(x+length)<=0:
+            c=secant(f,x,x+length,10**-10)
+            if (c != None):
+                print("Secant :The value of root is : ", "%.4f" % c)
+            c=newton(f,x,x+length,10**-10)
+            if (c != None):
+                print("Newton :The value of root is : ", "%.4f" % c)
+        x=x+length
 
 x = var('x')  # the possible variable names must be known beforehand...
 user_input = input("Enter function\n")
 f= sympify(user_input)
 a=float(input("Enter start point\n"))
 b=float(input("Enter end point\n"))
-print(secant(f,a,b,0.0001))
-print(newton(f,a,b,0.0001))
+func_2(f,a,b,100)
